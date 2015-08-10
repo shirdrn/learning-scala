@@ -10,11 +10,11 @@ import scala.language.postfixOps
 class LocalServer extends Actor with ActorLogging {
 
   def receive = {
-    case Start => println("start")
-    case Stop => println("stop")
-    case Heartbeat(id, magic) => println("Heartbeat" + (id, magic))
-    case Header(id, len, encrypted) => println("Header" + (id, len, encrypted))
-    case Packet(id, seq, content) => println("Packet" + (id, seq, content))
+    case Start => log.info("start")
+    case Stop => log.info("stop")
+    case Heartbeat(id, magic) => log.info("Heartbeat" + (id, magic))
+    case Header(id, len, encrypted) => log.info("Header" + (id, len, encrypted))
+    case Packet(id, seq, content) => log.info("Packet" + (id, seq, content))
     case _ =>
   }
 }
