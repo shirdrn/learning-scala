@@ -10,15 +10,15 @@ import scala.language.postfixOps
 class RemoteActor extends Actor with ActorLogging {
   def receive = {
     case Start => {
-      println("Receive event: " + Start)
+      log.info("Receive event: " + Start)
     }
     case Stop => {
-      println("Receive event: " + Stop)
+      log.info("Receive event: " + Stop)
     }
     case Shutdown(_, waitSecs) => {
-      println("Wait to shutdown: waitSecs=" + waitSecs)
+      log.info("Wait to shutdown: waitSecs=" + waitSecs)
       Thread.sleep(waitSecs)
-      println("Shutdown this system.")
+      log.info("Shutdown this system.")
       context.system.shutdown
     }
     case Heartbeat(id, magic) => println("Receive heartbeat: " + (id, magic))

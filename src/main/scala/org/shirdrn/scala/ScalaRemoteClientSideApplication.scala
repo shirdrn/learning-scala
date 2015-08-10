@@ -15,30 +15,30 @@ class ClientActor extends Actor with ActorLogging {
 
   def receive = {
     case Start => {
-      println("Send start command to server...")
+      log.info("Send start command to server...")
       remoteServerRef ! Start
     }
     case Stop => {
-      println("Send stop command to server...")
+      log.info("Send stop command to server...")
       remoteServerRef ! Stop
     }
     case hb: Heartbeat => {
-      println("Send heartbeat to server...")
+      log.info("Send heartbeat to server...")
       remoteServerRef ! hb
     }
     case header: Header => {
-      println("Send header to server...")
+      log.info("Send header to server...")
       remoteServerRef ! header
     }
     case pkt: Packet => {
-      println("Send packet to server...")
+      log.info("Send packet to server...")
       remoteServerRef ! pkt
     }
     case cmd: Shutdown => {
-      println("Send shutdown command to server...")
+      log.info("Send shutdown command to server...")
       remoteServerRef ! cmd
     }
-    case m => println("Unknown message: " + m)
+    case m => log.info("Unknown message: " + m)
   }
 
 }
