@@ -1,8 +1,6 @@
-package org.shirdrn.scala
+package org.shirdrn.scala.akka
 
-import akka.actor.{ActorLogging, Actor, ActorSystem, Props}
-import akka.event.LoggingAdapter
-import com.typesafe.config.ConfigFactory
+import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
 import net.sf.json.JSONObject
 
 import scala.language.postfixOps
