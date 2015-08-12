@@ -53,11 +53,11 @@ class ClientActor extends Actor with ActorLogging {
   }
 
   private def send(cmd: Serializable): Unit = {
-    log.info("Send command to server: " + cmd)
+//    log.info("Send command to server: " + cmd)
     try {
       remoteServerRef ! cmd
     } catch {
-      case _ => {
+      case e: Exception => {
         connected = false
         log.info("Try to connect by sending Start command...")
         send(Start)
@@ -117,7 +117,7 @@ object AkkaClientApplication extends App {
   // send some packets
   val DT_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS"
   val r = Random
-  val packetSize = 100
+  val packetCount = 100000
   val serviceProviders = Seq("CMCC", "AKBBC", "OLE")
   val payServiceProvicers = Seq("PayPal", "CMB", "ICBC", "ZMB", "XXB")
 
@@ -125,7 +125,8 @@ object AkkaClientApplication extends App {
     seq(r.nextInt(seq.size))
   }
 
-  for(i <- 0 until packetSize) {
+  val startWhen = System.currentTimeMillis()
+  for(i <- 0 until packetCount) {
     val pkt = createPacket(Map[String, Any](
       "txid" -> nextTxID,
       "pvid" -> nextProvider(serviceProviders),
@@ -133,8 +134,10 @@ object AkkaClientApplication extends App {
       "payp" -> nextProvider(payServiceProvicers),
       "amount" -> 1000 * r.nextFloat()))
     clientActor ! Packet("PKT", System.currentTimeMillis, pkt.toString)
-    Thread.sleep(500)
   }
+  val finishWhen = System.currentTimeMillis()
+  println("FINISH: timeTaken=" + (finishWhen - startWhen) + ", avg=" + packetCount/(finishWhen - startWhen))
+
   Thread.sleep(2000)
 
   // ask remote actor to shutdown

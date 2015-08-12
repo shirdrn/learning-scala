@@ -23,7 +23,7 @@ class RemoteActor extends Actor with ActorLogging {
     }
     case Heartbeat(id, magic) => log.info("RECV heartbeat: " + (id, magic))
     case Header(id, len, encrypted) => log.info("RECV header: " + (id, len, encrypted))
-    case Packet(id, seq, content) => log.info("RECV packet: " + (id, seq, content))
+    case Packet(id, seq, content) => //log.info("RECV packet: " + (id, seq, content))
     case _ =>
   }
 }
