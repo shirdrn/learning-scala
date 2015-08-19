@@ -8,6 +8,9 @@ import scala.language.postfixOps
 
 class RemoteActor extends Actor with ActorLogging {
 
+  val SUCCESS = "SUCCESS"
+  val FAILURE = "FAILURE"
+
   def receive = {
     case Start => {
       log.info("RECV event: " + Start)
@@ -23,7 +26,11 @@ class RemoteActor extends Actor with ActorLogging {
     }
     case Heartbeat(id, magic) => log.info("RECV heartbeat: " + (id, magic))
     case Header(id, len, encrypted) => log.info("RECV header: " + (id, len, encrypted))
-    case Packet(id, seq, content) => //log.info("RECV packet: " + (id, seq, content))
+    case Packet(id, seq, content) => {
+      val originalSender = sender
+      log.info("RECV packet: " + (id, seq, content))
+      originalSender ! (seq, SUCCESS)
+    }
     case _ =>
   }
 }
@@ -34,7 +41,8 @@ object AkkaServerBootableApplication extends Bootable {
   // Remote actor
   // http://agiledon.github.io/blog/2014/02/18/remote-actor-in-akka/
   val system = ActorSystem("remote-system", ConfigFactory.load().getConfig("MyRemoteServerSideActor"))
-  println("Remote server side actor started: " + system)
+  val log = system.log
+  log.info("Remote server side actor started: " + system)
 
   def startup = {
     system.actorOf(Props[RemoteActor], "remoteActor")
@@ -49,7 +57,8 @@ object AkkaServerBootableApplication extends Bootable {
 object AkkaServerApplication extends App {
 
   val system = ActorSystem("remote-system", ConfigFactory.load().getConfig("MyRemoteServerSideActor"))
-  println("Remote server actor started: " + system)
+  val log = system.log
+  log.info("Remote server actor started: " + system)
 
   system.actorOf(Props[RemoteActor], "remoteActor")
 

@@ -37,6 +37,7 @@ class ClientActor extends Actor with ActorLogging {
     case hb: Heartbeat => sendWithCheck(hb)
     case pkt: Packet => sendWithCheck(pkt)
     case cmd: Shutdown => send(cmd)
+    case (seq, result) => log.info("RESULT: seq=" + seq + ", result=" + result)
     case m => log.info("Unknown message: " + m)
   }
 
@@ -70,6 +71,7 @@ class ClientActor extends Actor with ActorLogging {
 object AkkaClientApplication extends App {
 
   val system = ActorSystem("client-system", ConfigFactory.load().getConfig("MyRemoteClientSideActor"))
+  val log = system.log
   val clientActor = system.actorOf(Props[ClientActor], "clientActor")
   @volatile var running = true
   val hbInterval = 1000
@@ -117,7 +119,7 @@ object AkkaClientApplication extends App {
   // send some packets
   val DT_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS"
   val r = Random
-  val packetCount = 100000
+  val packetCount = 100
   val serviceProviders = Seq("CMCC", "AKBBC", "OLE")
   val payServiceProvicers = Seq("PayPal", "CMB", "ICBC", "ZMB", "XXB")
 
@@ -136,7 +138,7 @@ object AkkaClientApplication extends App {
     clientActor ! Packet("PKT", System.currentTimeMillis, pkt.toString)
   }
   val finishWhen = System.currentTimeMillis()
-  println("FINISH: timeTaken=" + (finishWhen - startWhen) + ", avg=" + packetCount/(finishWhen - startWhen))
+  log.info("FINISH: timeTaken=" + (finishWhen - startWhen) + ", avg=" + packetCount/(finishWhen - startWhen))
 
   Thread.sleep(2000)
 
@@ -146,7 +148,7 @@ object AkkaClientApplication extends App {
 
   running = false
   while(hbWorker.isAlive) {
-    println("Wait heartbeat worker to exit...")
+    log.info("Wait heartbeat worker to exit...")
     Thread.sleep(300)
   }
   system.shutdown

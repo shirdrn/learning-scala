@@ -5,7 +5,7 @@ import net.sf.json.JSONObject
 
 import scala.language.postfixOps
 
-class LocalServer extends Actor with ActorLogging {
+class LocalActor extends Actor with ActorLogging {
 
   def receive = {
     case Start => log.info("start")
@@ -18,11 +18,11 @@ class LocalServer extends Actor with ActorLogging {
 }
 
 
-object ScalaLocalActor extends App {
+object LocalClient extends App {
   // Local actor
   val localServer = ActorSystem("local-server")
   println(localServer)
-  val localActorRef = localServer.actorOf(Props(new LocalServer()), name="local-server")
+  val localActorRef = localServer.actorOf(Props(new LocalActor()), name="local-server")
   println(localActorRef)
   localActorRef ! Start
   localActorRef ! Heartbeat("3099100", 0xabcd)
