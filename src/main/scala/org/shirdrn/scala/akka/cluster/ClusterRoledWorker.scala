@@ -1,8 +1,8 @@
 package org.shirdrn.scala.akka.cluster
 
 import akka.actor._
-import akka.cluster.{Member, Cluster}
-import akka.cluster.ClusterEvent.{UnreachableMember, MemberEvent, InitialStateAsEvents}
+import akka.cluster.ClusterEvent.{InitialStateAsEvents, MemberEvent, MemberUp, UnreachableMember}
+import akka.cluster.{Cluster, Member}
 
 abstract class ClusterRoledWorker extends Actor with ActorLogging {
 
@@ -11,7 +11,7 @@ abstract class ClusterRoledWorker extends Actor with ActorLogging {
 
   override def preStart(): Unit = {
     cluster.subscribe(self, initialStateMode = InitialStateAsEvents,
-      classOf[MemberEvent], classOf[UnreachableMember])
+      classOf[MemberUp], classOf[UnreachableMember], classOf[MemberEvent])
   }
 
   override def postStop(): Unit = cluster.unsubscribe(self)
