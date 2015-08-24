@@ -10,5 +10,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" % "akka-remote_2.10" % "2.3.12",
   "com.typesafe.akka" % "akka-kernel_2.10" % "2.3.12",
   "com.typesafe.akka" % "akka-cluster_2.10" % "2.3.12",
-  "mysql" % "mysql-connector-java" % "5.1.17"
+  "mysql" % "mysql-connector-java" % "5.1.17",
+  "org.apache.kafka" % "kafka_2.10" % "0.8.1.1"
   )

@@ -25,8 +25,8 @@ object AkkaClusterServerApplication extends App {
   val systems = Map("a" -> "MyServerActor", "b" -> "YourServerActor", "c" -> "HisServerActor")
   systems.keys.foreach { name =>
     val path = systems(name)
-    val system = ActorSystem("cluster-system-" + name, ConfigFactory.load().getConfig(path))
-    system.actorOf(Props[ClusterServerActor], name + "-ServerActor")
+    val system = ActorSystem("cluster-system", ConfigFactory.load().getConfig(path))
+    system.actorOf(Props[AkkaCluster], "clusterActor")
     println("Server actor started: name=" + name + ", path=" + path + ", system=" + system)
   }
 
