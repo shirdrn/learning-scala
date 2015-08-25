@@ -10,7 +10,7 @@ import org.shirdrn.scala.akka.cluster.utils.DatetimeUtils
 
 class EventIntercepter extends ClusterRoledWorker {
 
-  @volatile var InterceptedRecords : Int = 0
+  @volatile var interceptedRecords : Int = 0
   val IP_PATTERN = "[^\\s]+\\s+\\[([^\\]]+)\\].+\"(\\d+\\.\\d+\\.\\d+\\.\\d+)\"".r
   val blackIpList = Array(
     "5.9.116.101", "103.42.176.138", "123.182.148.65", "5.45.64.205",
@@ -47,9 +47,9 @@ class EventIntercepter extends ClusterRoledWorker {
     case NginxRecord(sourceHost, eventCode, line) => {
       val (isIpInBlackList, data) = checkRecord(eventCode, line)
       if(!isIpInBlackList) {
-        InterceptedRecords += 1
+        interceptedRecords += 1
         if(workers.size > 0) {
-          val processorIndex = (if (InterceptedRecords < 0) 0 else InterceptedRecords) % workers.size
+          val processorIndex = (if (interceptedRecords < 0) 0 else interceptedRecords) % workers.size
           workers(processorIndex) ! FilteredRecord(sourceHost, eventCode, line, data.getString("eventdate"), data.getString("realip"))
           log.info("Details: processorIndex=" + processorIndex + ", processors=" + workers.size)
         }

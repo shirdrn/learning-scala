@@ -1,8 +1,14 @@
 package org.shirdrn.scala.akka.cluster
 
+import java.util.concurrent.{Executors}
+
 import akka.actor._
 import akka.cluster.ClusterEvent._
 import com.typesafe.config.ConfigFactory
+
+import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
+import scala.concurrent.forkjoin.ForkJoinPool
 
 class EventCollector extends ClusterRoledWorker {
 
@@ -46,7 +52,14 @@ class EventCollector extends ClusterRoledWorker {
 
 }
 
-object EventCollector extends App {
+class EventClientActor extends Actor with ActorLogging {
+
+  implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(new ForkJoinPool())
+
+  def receive = {
+    case _=>
+  }
+
   val events = Map(
     "2751" -> List(
       """10.10.2.72 [21/Aug/2015:18:29:19 +0800] "GET /t.gif?installid=0000lAOX&udid=25371384b2eb1a5dc5643e14626ecbd4&sessionid=25371384b2eb1a5dc5643e14626ecbd41440152875362&imsi=460002830862833&operator=1&network=1&timestamp=1440152954&action=14&eventcode=300039&page=200002& HTTP/1.0" "-" 204 0 "-" "Dalvik/1.6.0 (Linux; U; Android 4.4.4; R8207 Build/KTU84P)" "121.25.190.146"""",
@@ -77,13 +90,19 @@ object EventCollector extends App {
 
   Thread.sleep(30000)
 
-  while(true) {
+  context.system.scheduler.schedule(0 millis, 5000 millis) {
     ports.foreach { port =>
       events(port).foreach { line =>
         println("RAW: port=" + port + ", line=" + line)
         actors(port) ! RawNginxRecord("host.me:" + port, line)
       }
     }
-    Thread.sleep(5000)
   }
+}
+
+object EventClient extends App {
+
+  val system = ActorSystem("client")
+  val clientActorRef = system.actorOf(Props[EventClientActor], name = "clientActor")
+  system.log.info("Client actor started: " + clientActorRef)
 }
