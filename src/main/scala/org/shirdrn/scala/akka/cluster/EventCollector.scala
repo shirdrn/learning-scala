@@ -1,7 +1,5 @@
 package org.shirdrn.scala.akka.cluster
 
-import java.util.concurrent.{Executors}
-
 import akka.actor._
 import akka.cluster.ClusterEvent._
 import com.typesafe.config.ConfigFactory

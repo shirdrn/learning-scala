@@ -7,7 +7,7 @@ import akka.cluster.ClusterEvent._
 import akka.cluster.Member
 import akka.cluster.protobuf.msg.ClusterMessages.MemberStatus
 import com.typesafe.config.ConfigFactory
-import kafka.producer.{KeyedMessage, ProducerConfig, Producer}
+import kafka.producer.{KeyedMessage, Producer, ProducerConfig}
 import net.sf.json.JSONObject
 
 class EventProcessor extends ClusterRoledWorker {

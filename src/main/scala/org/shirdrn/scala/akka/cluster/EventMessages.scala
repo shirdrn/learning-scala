@@ -1,7 +1,5 @@
 package org.shirdrn.scala.akka.cluster
 
-import scala.util.parsing.json.JSONObject
-
 object Registration extends Serializable
 
 trait EventMessage extends Serializable
