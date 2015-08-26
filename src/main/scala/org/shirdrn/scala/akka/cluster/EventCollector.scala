@@ -12,13 +12,6 @@ class EventCollector extends ClusterRoledWorker {
 
   @volatile var recordCounter : Int = 0
 
-  override def preStart(): Unit = {
-    cluster.subscribe(self, initialStateMode = InitialStateAsEvents,
-      classOf[MemberEvent], classOf[UnreachableMember])
-  }
-
-  override def postStop(): Unit = cluster.unsubscribe(self)
-
   def receive = {
     case MemberUp(member) =>
       log.info("Member is Up: {}", member.address)
@@ -31,8 +24,8 @@ class EventCollector extends ClusterRoledWorker {
     case Registration => {
       context watch sender
       workers = workers :+ sender
-      log.info("Intercepter registered: " + sender)
-      log.info("Registered intercepters: " + workers.size)
+      log.info("Interceptor registered: " + sender)
+      log.info("Registered interceptors: " + workers.size)
     }
     case Terminated(interceptingActorRef) =>
       workers = workers.filterNot(_ == interceptingActorRef)
@@ -41,9 +34,9 @@ class EventCollector extends ClusterRoledWorker {
       log.info("Raw message: eventCode=" + eventCode + ", sourceHost=" + sourceHost + ", line=" + line)
       recordCounter += 1
       if(workers.size > 0) {
-        val intercepterIndex = (if(recordCounter < 0) 0 else recordCounter) % workers.size
-        workers(intercepterIndex) ! NginxRecord(sourceHost, eventCode, line)
-        log.info("Details: intercepterIndex=" + intercepterIndex + ", intercepters=" + workers.size)
+        val interceptorIndex = (if(recordCounter < 0) 0 else recordCounter) % workers.size
+        workers(interceptorIndex) ! NginxRecord(sourceHost, eventCode, line)
+        log.info("Details: interceptorIndex=" + interceptorIndex + ", interceptors=" + workers.size)
       }
     }
   }

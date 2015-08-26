@@ -8,7 +8,7 @@ import com.typesafe.config.ConfigFactory
 import net.sf.json.JSONObject
 import org.shirdrn.scala.akka.cluster.utils.DatetimeUtils
 
-class EventIntercepter extends ClusterRoledWorker {
+class EventInterceptor extends ClusterRoledWorker {
 
   @volatile var interceptedRecords : Int = 0
   val IP_PATTERN = "[^\\s]+\\s+\\[([^\\]]+)\\].+\"(\\d+\\.\\d+\\.\\d+\\.\\d+)\"".r
@@ -81,14 +81,14 @@ class EventIntercepter extends ClusterRoledWorker {
   }
 }
 
-object EventIntercepter extends App {
+object EventInterceptor extends App {
 
   Seq("2851","2852").foreach { port =>
     val config = ConfigFactory.parseString("akka.remote.netty.tcp.port=" + port)
-      .withFallback(ConfigFactory.parseString("akka.cluster.roles = [intercepter]"))
+      .withFallback(ConfigFactory.parseString("akka.cluster.roles = [interceptor]"))
       .withFallback(ConfigFactory.load())
     val system = ActorSystem("event-cluster-system", config)
-    val processingActor = system.actorOf(Props[EventIntercepter], name = "interceptingActor")
+    val processingActor = system.actorOf(Props[EventInterceptor], name = "interceptingActor")
     system.log.info("Processing Actor: " + processingActor)
   }
 }

@@ -15,13 +15,6 @@ class EventProcessor extends ClusterRoledWorker {
   val topic = "app_events"
   val producer = KakfaUtils.createProcuder
 
-  override def preStart(): Unit = {
-    cluster.subscribe(self, initialStateMode = InitialStateAsEvents,
-      classOf[MemberEvent], classOf[UnreachableMember])
-  }
-
-  override def postStop(): Unit = cluster.unsubscribe(self)
-
   def receive = {
     case MemberUp(member) =>
       log.info("Member is Up: {}", member.address)
